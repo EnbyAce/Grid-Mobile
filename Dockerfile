@@ -160,9 +160,6 @@ FROM setup-jdk AS android-builder
     RUN apt install -y --no-install-recommends build-essential
 
     COPY --chown=$UID:$GID --from=setup-flutter /opt/flutter /opt/flutter
-    RUN mkdir -p /workspace
-    RUN mkdir -p /workspace/.dart-tool
-    RUN chown -R $UID:$GID /workspace/.dart-tool
     USER $UID:$GID
     RUN /opt/flutter/bin/flutter --disable-analytics
     USER root:root
@@ -172,6 +169,8 @@ FROM setup-jdk AS android-builder
     COPY --chown=$UID:$GID --from=setup-rust $CARGO_HOME $CARGO_HOME
     COPY --chown=$UID:$GID --from=setup-rust $RUSTUP_HOME $RUSTUP_HOME
     COPY --chown=$UID:$GID --from=setup-flutter-dependencies $HOME/.pub-cache $HOME/.pub-cache
+    COPY --chown=$UID:$GID --from=setup-flutter-dependencies $HOME/.dart-tool $HOME/.dart-tool
+    COPY --chown=$UID:$GID --from=setup-flutter-dependencies /workspace/.dart_tool $HOME/.dart_tool
     COPY --chown=$UID:$GID --from=setup-gradle-dependencies $HOME/.gradle $HOME/.gradle
     COPY --chown=$UID:$GID --from=setup-gradle-dependencies $HOME/android $HOME/android
 
@@ -186,6 +185,7 @@ FROM setup-jdk AS android-builder
     if [ ! -f /workspace/android/local.properties ]; then
         cp $HOME/android/local.properties /workspace/android/local.properties
     fi
+    cp -a $HOME/.dart_tool/. /workspace/.dart_tool
 
     exec "$@"
 EOF
