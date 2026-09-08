@@ -29,9 +29,12 @@ class LocationManager with ChangeNotifier {
   StreamSubscription<bool>? _motionSubscription;
 
   LocationManager() {
+  }
+
+  Future<void> initialize() async {
+    await _loadTrackingMode();
     _initializeLifecycleListener();
     // _loadBatterySaverState();
-    _loadTrackingMode();
     _setupLocationService();
   }
 

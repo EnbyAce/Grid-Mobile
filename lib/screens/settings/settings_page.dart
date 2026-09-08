@@ -281,20 +281,18 @@ class _SettingsPageState extends State<SettingsPage> {
   /// for any consumer that still reads it.
   Future<void> _setSharingMode(SharingMode mode) async {
     if (_sharingMode == mode) return;
-    setState(() => _sharingMode = mode);
+    // setState(() => _sharingMode = mode);
     try {
       await context.read<LocationDispatch>().setMode(mode);
     } catch (_) {}
     final prefs = await SharedPreferences.getInstance();
     int trackingModeIndex = _sharingModeToIndex(mode);
-    if (_sharingModeToIndex(_sharingMode) != trackingModeIndex) {
-      await prefs.setInt("trackingModeIndex", trackingModeIndex);
-      if (mounted) setState(() => _sharingMode = mode);
-      try {
-        Provider.of<LocationManager>(context, listen: false)
-          .setTrackingMode(trackingModeIndex);
-      } catch (_) {}
-    }
+    await prefs.setInt("trackingModeIndex", trackingModeIndex);
+    if (mounted) setState(() => _sharingMode = mode);
+    try {
+      Provider.of<LocationManager>(context, listen: false)
+        .setTrackingMode(trackingModeIndex);
+    } catch (_) {}
   }
 
   // Future<void> _toggleBatterySaver(bool value) async {
