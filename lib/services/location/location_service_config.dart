@@ -6,6 +6,9 @@ enum TrackingMode {
 
   /// Balanced accuracy and battery usage.
   batterySaver,
+
+  /// Highest accuracy, ~5-8%/day battery usage
+  live,
 }
 
 class LocationServiceConfig {

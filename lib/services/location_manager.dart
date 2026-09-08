@@ -18,9 +18,11 @@ class LocationManager with ChangeNotifier {
   LocationUpdate? _lastPosition;
   bool _isTracking = false;
   bool _isInForeground = true;
-  bool _batterySaverEnabled = false;
+  // bool _batterySaverEnabled = false;
   bool _isMoving = false;
   DateTime? _lastLocationUpdate;
+
+  TrackingMode _trackingMode;
 
   late final AppLifecycleListener _lifecycleListener;
   StreamSubscription<LocationUpdate>? _locationSubscription;
@@ -28,7 +30,8 @@ class LocationManager with ChangeNotifier {
 
   LocationManager() {
     _initializeLifecycleListener();
-    _loadBatterySaverState();
+    // _loadBatterySaverState();
+    _loadTrackingMode();
     _setupLocationService();
   }
 
@@ -54,20 +57,54 @@ class LocationManager with ChangeNotifier {
     );
   }
 
-  // Restore battery-saver setting from SharedPreferences
-  Future<void> _loadBatterySaverState() async {
+  Future<void> _loadTrackingMode() async {
     final prefs = await SharedPreferences.getInstance();
-    _batterySaverEnabled = prefs.getBool('battery_saver') ?? false;
+    switch (prefs.getInt("trackingModeIndex") ?? 1) {
+      case 0:
+        _trackingMode = TrackingMode.batterySaver;
+        break;
+      case 2:
+        _trackingMode = TrackingMode.live;
+        break;
+      default:
+        _trackingMode = TrackingMode.normal;
+        break;
+    }
   }
 
-  // Toggle battery-saver mode
-  Future<void> toggleBatterySaverMode(bool enabled) async {
-    _batterySaverEnabled = enabled;
+  Future<void> setTrackingMode(int index) async {
+    switch (index) {
+      case 0:
+        _trackingMode = TrackingMode.batterySaver;
+        break;
+      case 2:
+        _trackingMode = TrackingMode.live;
+        break;
+      default:
+        _trackingMode = TrackingMode.normal;
+        break;
+    }
+
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('battery_saver', enabled);
+    await prefs.setInt("trackingModeIndex", index);
     _updateTrackingConfig();
     notifyListeners();
   }
+
+  // // Restore battery-saver setting from SharedPreferences
+  // Future<void> _loadBatterySaverState() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   _batterySaverEnabled = prefs.getBool('battery_saver') ?? false;
+  // }
+
+  // // Toggle battery-saver mode
+  // Future<void> toggleBatterySaverMode(bool enabled) async {
+  //   _batterySaverEnabled = enabled;
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.setBool('battery_saver', enabled);
+  //   _updateTrackingConfig();
+  //   notifyListeners();
+  // }
 
   // Setup location service listeners
   void _setupLocationService() {
@@ -111,9 +148,9 @@ class LocationManager with ChangeNotifier {
   void _updateTrackingConfig() {
     if (!_isTracking) return;
 
-    final mode = _batterySaverEnabled ? TrackingMode.batterySaver : TrackingMode.normal;
+    // final mode = _batterySaverEnabled ? TrackingMode.batterySaver : TrackingMode.normal;
     final config = LocationServiceConfig(
-      mode: mode,
+      mode: _trackingMode,
       enableHeadless: true,
       startOnBoot: true,
     );

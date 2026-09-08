@@ -137,7 +137,8 @@ class _SettingsPageState extends State<SettingsPage> {
     _loadUser();
     _loadPasswordStatus();
     _loadIncognitoState();
-    _loadBatterySaverState();
+    _loadTrackingMode();
+    // _loadBatterySaverState();
     _loadAutoPauseAtHomeState();
     _loadCachedAvatar();
     _loadAppVersion();
@@ -200,14 +201,23 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
-  Future<void> _loadBatterySaverState() async {
+  Future<void> _loadTrackingMode() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _batterySaver = prefs.getBool('battery_saver') ?? false;
-      _sharingMode =
-          SharingModePref.fromPrefValue(prefs.getString('sharing_mode'));
+      int trackingModeIndex = prefs.getInt("trackingModeIndex") ?? 1;
+      _trackingMode = trackingModeIndex == 0 ? TrackingMode.batterySaver : (trackingModeIndex == 2 ? TrackingMode.live : TrackingMode.normal);
+      _sharingMode = SharingModePref.fromPrefValue(prefs.getString("sharing_mode"));
     });
   }
+
+  // Future<void> _loadBatterySaverState() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     _batterySaver = prefs.getBool('battery_saver') ?? false;
+  //     _sharingMode =
+  //         SharingModePref.fromPrefValue(prefs.getString('sharing_mode'));
+  //   });
+  // }
 
   Future<void> _loadAutoPauseAtHomeState() async {
     final prefs = await SharedPreferences.getInstance();
@@ -258,6 +268,10 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  int _sharingModeToIndex(SharingMode mode) {
+    return mode == SharingMode.light ? 0 : (mode == SharingMode.balanced ? 1 : 2); // light = 0, balanced = 1, live = 2
+  }
+
   /// Drives the user-facing 'Sharing mode' slider. Persists the choice,
   /// swaps the underlying `libre_location` preset at runtime via
   /// LocationDispatch, and keeps the legacy `battery_saver` pref in sync
@@ -269,13 +283,13 @@ class _SettingsPageState extends State<SettingsPage> {
       await context.read<LocationDispatch>().setMode(mode);
     } catch (_) {}
     final prefs = await SharedPreferences.getInstance();
-    final wantBatterySaver = mode == SharingMode.light;
-    if (_batterySaver != wantBatterySaver) {
-      await prefs.setBool('battery_saver', wantBatterySaver);
-      if (mounted) setState(() => _batterySaver = wantBatterySaver);
+    int trackingModeIndex = _sharingModeToIndex(mode);
+    if (_sharingModeToIndex(_sharingMode) != trackingModeIndex) {
+      await prefs.setIndex("trackingModeIndex", trackingModeIndex);
+      if (mounted) setState(() => _sharingMode = trackingModeIndex);
       try {
         Provider.of<LocationManager>(context, listen: false)
-            .toggleBatterySaverMode(wantBatterySaver);
+          .setTrackingMode(trackingModeIndex);
       } catch (_) {}
     }
   }
