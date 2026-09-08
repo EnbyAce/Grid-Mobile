@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Singleton debug logging service that POSTs structured JSON to a remote endpoint.
 /// All network calls are fire-and-forget and silently swallow errors.
@@ -18,7 +19,7 @@ class DebugLogService {
     try {
       final prefs = await SharedPreferences.getInstance();
       _enabled = prefs.getBool('debug_log_enabled') ?? false;
-      _endpoint = prefs.getString('debug_log_endpoint') ?? 'http://100.83.161.78:9999/logs';
+      _endpoint = prefs.getString('debug_log_endpoint') ?? dotenv.env['DEBUG_LOG_SERVICE_ENDPOINT'] ?? 'http://100.83.161.78:9999/logs';
     } catch (_) {}
   }
 

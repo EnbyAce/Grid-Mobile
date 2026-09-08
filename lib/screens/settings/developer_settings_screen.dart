@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:grid_frontend/services/debug_log_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class DeveloperSettingsScreen extends StatefulWidget {
   const DeveloperSettingsScreen({Key? key}) : super(key: key);
@@ -20,7 +21,7 @@ class _DeveloperSettingsScreenState extends State<DeveloperSettingsScreen> {
     super.initState();
     final service = DebugLogService.instance;
     _enabled = service.enabled;
-    _endpointController.text = service.endpoint ?? 'http://100.83.161.78:9999/logs';
+    _endpointController.text = service.endpoint ?? dotenv.env['DEBUG_LOG_SERVICE_ENDPOINT'] ?? 'http://100.83.161.78:9999/logs';
   }
 
   @override
@@ -77,7 +78,7 @@ class _DeveloperSettingsScreenState extends State<DeveloperSettingsScreen> {
             controller: _endpointController,
             decoration: InputDecoration(
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              hintText: 'http://100.83.161.78:9999/logs',
+              hintText: dotenv.env['DEBUG_LOG_SERVICE_ENDPOINT'] ?? 'http://100.83.161.78:9999/logs',
             ),
             onChanged: (val) {
               DebugLogService.instance.setEndpoint(val.trim());

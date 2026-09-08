@@ -36,6 +36,7 @@ jobs:
           MAPS_URL=https://map.mygrid.app/v1/protomaps.pmtiles
           VERSION_CHECK_URL=https://version.mygrid.app
           TURNSTILE_SITE_KEY=0x4AAAAAACuoM-Fe6MODnKzk
+          DEBUG_LOG_SERVICE_ENDPOINT=http://100.83.161.78:9999/logs
           EOF
 
       - name: Run Flutter unit tests
@@ -64,6 +65,7 @@ jobs:
           MAPS_URL=https://map.mygrid.app/v1/protomaps.pmtiles
           VERSION_CHECK_URL=https://version.mygrid.app
           TURNSTILE_SITE_KEY=0x4AAAAAACuoM-Fe6MODnKzk
+          DEBUG_LOG_SERVICE_ENDPOINT=http://100.83.161.78:9999/logs
           EOF
 
       - name: Start test infrastructure
@@ -119,6 +121,7 @@ jobs:
           MAPS_URL=https://map.mygrid.app/v1/protomaps.pmtiles
           VERSION_CHECK_URL=https://version.mygrid.app
           TURNSTILE_SITE_KEY=0x4AAAAAACuoM-Fe6MODnKzk
+          DEBUG_LOG_SERVICE_ENDPOINT=http://100.83.161.78:9999/logs
           EOF
 
       - name: Set up Android signing
