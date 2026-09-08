@@ -62,6 +62,7 @@ import '../../widgets/grid/grid_avatar.dart';
 import '../../widgets/grid/grid_button.dart';
 import '../../widgets/grid/grid_mono.dart';
 import '../../widgets/grid/grid_segmented.dart';
+import '../../services/location/location_service_config.dart';
 
 
 
@@ -107,6 +108,8 @@ class _SettingsPageState extends State<SettingsPage> {
   // window opens the Developer Tools screen.
   int _devTapCount = 0;
   DateTime? _lastDevTapAt;
+
+  TrackingMode _trackingMode = TrackingMode.normal;
 
   void _onFooterTapped() {
     final now = DateTime.now();
@@ -285,8 +288,8 @@ class _SettingsPageState extends State<SettingsPage> {
     final prefs = await SharedPreferences.getInstance();
     int trackingModeIndex = _sharingModeToIndex(mode);
     if (_sharingModeToIndex(_sharingMode) != trackingModeIndex) {
-      await prefs.setIndex("trackingModeIndex", trackingModeIndex);
-      if (mounted) setState(() => _sharingMode = trackingModeIndex);
+      await prefs.setInt("trackingModeIndex", trackingModeIndex);
+      if (mounted) setState(() => _sharingMode = mode);
       try {
         Provider.of<LocationManager>(context, listen: false)
           .setTrackingMode(trackingModeIndex);
@@ -294,33 +297,33 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  Future<void> _toggleBatterySaver(bool value) async {
-    final locationManager = Provider.of<LocationManager>(context, listen: false);
-    final prefs = await SharedPreferences.getInstance();
+  // Future<void> _toggleBatterySaver(bool value) async {
+  //   final locationManager = Provider.of<LocationManager>(context, listen: false);
+  //   final prefs = await SharedPreferences.getInstance();
 
-    setState(() {
-      _batterySaver = value;
-    });
+  //   setState(() {
+  //     _batterySaver = value;
+  //   });
 
-    await prefs.setBool('battery_saver', value);
+  //   await prefs.setBool('battery_saver', value);
 
-    if (value) {
-      // enable incognito
-      locationManager.toggleBatterySaverMode(value);
-      InAppNotifier.instance.show(
-        title: 'Battery Saver Mode enabled',
-        message: 'Location updates less frequently to save power.',
-        variant: InAppNotificationVariant.success,
-      );
-    } else {
-      locationManager.toggleBatterySaverMode(value);
-      InAppNotifier.instance.show(
-        title: 'Battery Saver Mode disabled',
-        message: 'Location now updates at full frequency.',
-        variant: InAppNotificationVariant.info,
-      );
-    }
-  }
+  //   if (value) {
+  //     // enable incognito
+  //     locationManager.toggleBatterySaverMode(value);
+  //     InAppNotifier.instance.show(
+  //       title: 'Battery Saver Mode enabled',
+  //       message: 'Location updates less frequently to save power.',
+  //       variant: InAppNotificationVariant.success,
+  //     );
+  //   } else {
+  //     locationManager.toggleBatterySaverMode(value);
+  //     InAppNotifier.instance.show(
+  //       title: 'Battery Saver Mode disabled',
+  //       message: 'Location now updates at full frequency.',
+  //       variant: InAppNotificationVariant.info,
+  //     );
+  //   }
+  // }
 
   Future<void> _toggleIncognitoMode(bool value) async {
     final locationManager = Provider.of<LocationManager>(context, listen: false);

@@ -22,7 +22,7 @@ class LocationManager with ChangeNotifier {
   bool _isMoving = false;
   DateTime? _lastLocationUpdate;
 
-  TrackingMode _trackingMode;
+  TrackingMode _trackingMode = TrackingMode.normal;
 
   late final AppLifecycleListener _lifecycleListener;
   StreamSubscription<LocationUpdate>? _locationSubscription;
@@ -120,7 +120,8 @@ class LocationManager with ChangeNotifier {
         final timeSinceLastUpdate = now.difference(_lastLocationUpdate!);
 
         // Reduced throttling intervals for more frequent updates
-        final throttleInterval = _batterySaverEnabled
+        // final throttleInterval = _batterySaverEnabled
+        final throttleInterval = _trackingMode == TrackingMode.batterySaver
             ? const Duration(minutes: 3) // Reduced from 5 to 3 minutes
             : const Duration(seconds: 30); // Reduced from 1 minute to 30 seconds
 
@@ -168,7 +169,7 @@ class LocationManager with ChangeNotifier {
   }
 
   bool get isTracking => _isTracking;
-  bool get batterySaverEnabled => _batterySaverEnabled;
+  // bool get batterySaverEnabled => _batterySaverEnabled;
   bool get isMoving => _isMoving;
   DateTime? get lastLocationUpdate => _lastLocationUpdate;
   
