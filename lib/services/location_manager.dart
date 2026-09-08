@@ -59,7 +59,7 @@ class LocationManager with ChangeNotifier {
 
   Future<void> _loadTrackingMode() async {
     final prefs = await SharedPreferences.getInstance();
-    switch (prefs.getInt("trackingModeIndex") ?? 1) {
+    switch (prefs.getInt("trackingModeIndex")) {
       case 0:
         _trackingMode = TrackingMode.batterySaver;
         break;

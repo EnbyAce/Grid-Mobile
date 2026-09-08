@@ -207,7 +207,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> _loadTrackingMode() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      int trackingModeIndex = prefs.getInt("trackingModeIndex") ?? 1;
+      int? trackingModeIndex = prefs.getInt("trackingModeIndex");
       _trackingMode = trackingModeIndex == 0 ? TrackingMode.batterySaver : (trackingModeIndex == 2 ? TrackingMode.live : TrackingMode.normal);
       _sharingMode = SharingModePref.fromPrefValue(prefs.getString("sharing_mode"));
     });
@@ -272,7 +272,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   int _sharingModeToIndex(SharingMode mode) {
-    return mode == SharingMode.light ? 0 : (mode == SharingMode.balanced ? 1 : 2); // light = 0, balanced = 1, live = 2
+    return mode == SharingMode.light ? 0 : (mode == SharingMode.live ? 2 : 1); // light = 0, balanced = 1, live = 2
   }
 
   /// Drives the user-facing 'Sharing mode' slider. Persists the choice,
